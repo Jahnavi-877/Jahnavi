@@ -1,0 +1,151 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// Define structure for student
+struct Student 
+{
+    int id;
+    char name[50];
+    int age;
+    char grade[10];
+};
+
+// Function prototypes
+void addStudent();
+void viewStudents();
+void updateStudent();
+void deleteStudent();
+void saveToFile();
+void loadFromFile();
+
+#define MAX_STUDENTS [100];
+Struct Student students[MAX_STUDENTS];
+int studentCount = 0;
+int main()
+ {
+    int choice;
+    loadFromFile();  // Load student data from file
+
+    while (1)
+ {
+        printf("\n--- School Management System ---\n");
+        printf("1. Add Student\n");
+        printf("2. View Students\n");
+        printf("3. Update Student\n");
+        printf("4. Delete Student\n");
+        printf("5. Save and Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice)
+ {
+            case 1: addStudent(); break;
+            case 2: viewStudents(); break;
+            case 3: updateStudent(); break;
+            case 4: deleteStudent(); break;
+            case 5: saveToFile(); exit(0);
+            default: printf("Invalid choice! Try again.\n");
+        }
+    }
+    return 0;
+}
+  // Function to add a student
+   void addStudent() 
+{
+    if (studentCount >= MAX_STUDENTS) 
+{
+        printf("Student list is full!\n");
+        return;
+   }
+    struct Student s;
+    printf("Enter ID: ");
+    scanf("%d", &s.id);
+    printf("Enter Name: ");
+    scanf(" %[^\n]", s.name);  // To accept full name with spaces
+    printf("Enter Age: ");
+    scanf("%d", &s.age);
+    printf("Enter Grade: ");
+    scanf("%s", s.grade);
+    students[studentCount++] = s;
+    printf("Student added successfully!\n");
+}
+  // Function to view all students
+   void viewStudents() {
+   if (studentCount == 0) {
+   printf("No students found!\n");
+     return;
+    }
+    printf("\n--- Student List ---\n");
+    for (int i = 0; i < studentCount; i++) {
+    printf("ID: %d, Name: %s, Age: %d, Grade: %s\n",
+    students[i].id, students[i].name, students[i].age, students[i].grade);
+    }
+}
+    // Function to update a student's record
+    void updateStudent() {
+    int id, found = 0;
+    printf("Enter student ID to update: ");
+    scanf("%d", &id);
+    
+    for (int i = 0; i < studentCount; i++) 
+{
+     if (students[i].id == id)
+ {
+            found = 1;
+            printf("Enter new Name: ");
+            scanf(" %[^\n]", students[i].name);
+            printf("Enter new Age: ");
+            scanf("%d", &students[i].age);
+            printf("Enter new Grade: ");
+            scanf("%s", students[i].grade);
+            printf("Student record updated!\n");
+            break;
+        }
+    }
+    if (!found) {
+        printf("Student with ID %d not found!\n", id);
+    }
+}
+// Function to delete a student
+void deleteStudent() {
+    int id, found = 0;
+    printf("Enter student ID to delete: ");
+    scanf("%d", &id);
+
+    for (int i = 0; i < studentCount; i++) {
+    if (students[i].id == id) {
+            found = 1;
+            for (int j = i; j < studentCount - 1; j++) {
+                students[j] = students[j + 1];
+            }
+            studentCount--;
+            printf("Student deleted successfully!\n");
+            break;
+        }
+    }
+    if (!found) {
+     printf("Student with ID %d not found!\n", id);
+    }
+}
+
+   // Function to save students to a file
+    void saveToFile() {
+   FILE *file = fopen("students.dat", "wb");
+    if (file == NULL) {
+     printf("Error saving data!\n");
+     return;
+    }
+    fwrite(&studentCount, sizeof(int), 1, file);
+    fwrite(students, sizeof(struct Student), studentCount, file);
+    fclose(file);
+    printf("Data saved successfully!\n");
+}
+// Function to load students from a file
+void loadFromFile() {
+    FILE *file = fopen("students.dat", "rb");
+    if (file == NULL) {
+        return; // File might not exist yet, which is fine
+    }
+    fread(&studentCount, sizeof(int), 1, file);
+    fread(students, sizeof(struct Student), studentCount, file);
+    fclose(file);
+}
